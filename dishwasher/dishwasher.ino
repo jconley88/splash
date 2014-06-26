@@ -76,3 +76,10 @@ void setup_lcd(){
   // Print a message to the LCD.
   lcd.print("Cleaning Now!");
 }
+
+void print_two_digits(int digits){
+  if (digits < 10){
+    lcd.print(0);
+  }
+  lcd.print(digits);
+}
