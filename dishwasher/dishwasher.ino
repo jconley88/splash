@@ -39,16 +39,18 @@ void loop(){
   if(maxval - minval > 200) {
     running = 1;
   }
-  
+
+  lcd.setCursor(0, 0);
+  if(running == 1) {
+    lcd.print("Cleaning Now!");
+  } else {
+    lcd.print("Not Cleaning!");
+  }
+
   Serial.print("Sensor Reading: ");
   Serial.print(flexSensorReading);
   Serial.print(" running: ");
   Serial.println(running);
-
-  //In my tests I was getting a reading on the arduino between 512, and 614. 
-  //Using map(), you can convert that to a larger range like 0-100.
-  int flex0to100 = map(flexSensorReading, 512, 614, 0, 100);
-  //Serial.println(flex0to100);
 
   loop_lcd();
   delay(250); //just here to slow down the output for easier reading
