@@ -7,6 +7,7 @@ const int keep = 20;
 const int threshold = 200;
 int values[keep];
 int valcounter = 0;
+const int temperaturePin = 1;
 
 void setup(){
   setup_lcd();
@@ -53,7 +54,31 @@ void loop(){
   Serial.println(running);
 
   loop_lcd();
+  loop_temperature();
   delay(250); //just here to slow down the output for easier reading
+}
+
+void loop_temperature(){
+  float voltage, degreesF, degreesC;
+  voltage = getVoltage(temperaturePin);
+  degreesC = (voltage - 0.5) * 100.0;
+  degreesF = degreesC * (9.0/5.0) + 32.0;
+
+  lcd.setCursor(15, 1);
+  lcd.print('F')
+  int lcd_position = 15
+  while(degreesF)
+  {
+    lcd.setCursor(lcd_position - 1, 1);
+    lcd.print(degreesF % 10);
+    degreesF /= 10;
+  }
+}
+
+float getVoltage(int pin)
+{ 
+  float voltage_per_analog_signal = 0.004882814;
+  return (analogRead(pin) * voltage_per_analog_signal);
 }
 
 void loop_lcd() {
