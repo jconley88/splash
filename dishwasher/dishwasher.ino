@@ -79,6 +79,8 @@ void loop_temperature(){
   lcd.setCursor(15, 1);
   lcd.print('F');
   int lcd_position = 15;
+  Serial.print("Temperature: ");
+  Serial.println(degreesF);
   while(degreesF)
   {
     lcd.setCursor(lcd_position - 1, 1);
