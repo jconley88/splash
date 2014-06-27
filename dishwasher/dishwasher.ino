@@ -62,6 +62,10 @@ void loop(){
   loop_lcd();
   loop_temperature();
   previous_running_status = running;
+  is_complete();
+  if(is_complete()){
+    notify_complete();
+  }
   delay(250); //just here to slow down the output for easier reading
 }
 
@@ -103,6 +107,22 @@ void loop_lcd() {
   lcd.print(':');
   lcd.setCursor(3, 1);
   print_two_digits(seconds);
+}
+
+boolean is_complete(){
+  int all_seconds = (wash_time - millis() + cleaning_start_time)/(1000);
+  int minutes = all_seconds / 60;
+  int seconds = all_seconds % 60;
+  if(int(minutes) == 0 && int(seconds) == 0){
+    Serial.println("Done");
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void notify_complete(){
+  
 }
 
 void setup_lcd(){
