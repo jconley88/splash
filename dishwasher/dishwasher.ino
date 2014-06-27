@@ -107,6 +107,9 @@ void update_timer_lcd(int running) {
       lcd.setCursor(3, 1);
       print_two_digits(seconds);
     }
+  } else {
+     lcd.setCursor(0,1);
+     lcd.print("      ");
   }
 }
 
