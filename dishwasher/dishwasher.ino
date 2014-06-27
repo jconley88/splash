@@ -45,7 +45,8 @@ void loop(){
   }
 
   lcd.setCursor(0, 0);
-  if(running == 1) {
+  bool complete = is_complete();
+  if(running == 1 && !complete) {
     lcd.print("Cleaning Now!");
     if(previous_running_status == 0){
       reset_timer();
@@ -59,11 +60,10 @@ void loop(){
   Serial.print(" running: ");
   Serial.println(running);
 
-  update_timer_lcd(running);
+  update_timer_lcd(running && !complete);
   loop_temperature();
   previous_running_status = running;
-  is_complete();
-  if(is_complete()){
+  if(complete){
     notify_complete();
   }
   delay(250); //just here to slow down the output for easier reading
