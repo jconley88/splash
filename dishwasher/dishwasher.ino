@@ -98,15 +98,14 @@ void loop_lcd() {
   int all_seconds = (wash_time - millis() + cleaning_start_time)/(1000);
   int minutes = all_seconds / 60;
   int seconds = all_seconds % 60;
-  
-  // set the cursor to column 0, line 1
-  // (note: line 1 is the second row, since counting begins with 0):
-  lcd.setCursor(0, 1);
-  print_two_digits(minutes);
-  lcd.setCursor(2, 1);
-  lcd.print(':');
-  lcd.setCursor(3, 1);
-  print_two_digits(seconds);
+  if(minutes >= 0 && seconds >= 0){
+    lcd.setCursor(0, 1);
+    print_two_digits(minutes);
+    lcd.setCursor(2, 1);
+    lcd.print(':');
+    lcd.setCursor(3, 1);
+    print_two_digits(seconds);
+  }
 }
 
 boolean is_complete(){
