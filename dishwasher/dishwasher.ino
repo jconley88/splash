@@ -121,7 +121,7 @@ boolean is_complete(){
 }
 
 void notify_complete(){
-  
+    Serial.println("stopped");
 }
 
 void setup_lcd(){
@@ -140,5 +140,6 @@ void print_two_digits(int digits){
 
 void reset_timer(){
   cleaning_start_time = millis();
+  Serial.println("going");
 }
 
