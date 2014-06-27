@@ -5,7 +5,8 @@ int flexSensorPin = A0; //analog pin 0
 int temperaturePin = A1; //analog pin 1
 
 const int keep = 20;
-const float wash_time = 2700000;
+#const float wash_time = 2700000;
+const float wash_time = 27000;
 const int threshold = 200;
 int values[keep];
 int valcounter = 0;
