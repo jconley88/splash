@@ -59,7 +59,7 @@ void loop(){
   Serial.print(" running: ");
   Serial.println(running);
 
-  loop_lcd();
+  update_timer_lcd(running);
   loop_temperature();
   previous_running_status = running;
   is_complete();
@@ -93,18 +93,20 @@ float getVoltage(int pin)
   return (analogRead(pin) * voltage_per_analog_signal);
 }
 
-void loop_lcd() {
-  // print the number of seconds since reset:
-  int all_seconds = (wash_time - millis() + cleaning_start_time)/(1000);
-  int minutes = all_seconds / 60;
-  int seconds = all_seconds % 60;
-  if(minutes >= 0 && seconds >= 0){
-    lcd.setCursor(0, 1);
-    print_two_digits(minutes);
-    lcd.setCursor(2, 1);
-    lcd.print(':');
-    lcd.setCursor(3, 1);
-    print_two_digits(seconds);
+void update_timer_lcd(int running) {
+  if(running != 0) {
+    // print the number of seconds since reset:
+    int all_seconds = (wash_time - millis() + cleaning_start_time)/(1000);
+    int minutes = all_seconds / 60;
+    int seconds = all_seconds % 60;
+    if(minutes >= 0 && seconds >= 0){
+      lcd.setCursor(0, 1);
+      print_two_digits(minutes);
+      lcd.setCursor(2, 1);
+      lcd.print(':');
+      lcd.setCursor(3, 1);
+      print_two_digits(seconds);
+    }
   }
 }
 
