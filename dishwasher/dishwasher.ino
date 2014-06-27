@@ -2,15 +2,21 @@
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 int flexSensorPin = A0; //analog pin 0
-int temperaturePin = A1; //analog pin 1
+int temperaturePin = 1; //analog pin 1
 
-const int keep = 20;
+const int keep = 5;
 const float wash_time = 2700000;
 const int threshold = 200;
 int values[keep];
+int averaged_values[keep];
 int valcounter = 0;
 float cleaning_start_time;
 int previous_running_status = 0;
+const int sample_rate_per_second = 4;
+const int high_threshold = 500;
+const int low_threshold = 200;
+const int frequency_milliseconds = int(1000 / sample_rate_per_second);
+int previous_value;
 
 void setup(){
   setup_lcd();
@@ -20,29 +26,44 @@ void setup(){
 }
 
 void loop(){
-  int flexSensorReading = analogRead(flexSensorPin); 
+//  is_running();
+  int value;
+  int flexSensorvalue = analogRead(flexSensorPin); 
+  //Serial.println(flexSensorvalue);
+  values[++valcounter % keep] = flexSensorvalue;
 
-  //Serial.println(flexSensorReading);
-  values[++valcounter % keep] = flexSensorReading;
-
-  int minval = 1024, maxval = 0;
-  for(int i = 0; i < keep; ++i) {
-    minval = min(minval, values[i]);
-    maxval = max(maxval, values[i]);
+  if( flexSensorvalue > high_threshold){
+   value = 1;
+   
+   Serial.println("value");
+   Serial.println(value);
+   Serial.println("previous_value");
+   Serial.println(previous_value);
+   if(previous_value == -1){
+     Serial.println("transition");
+     register_transition();
+   }
+  } else if ( flexSensorvalue < low_threshold ){
+   value = -1;
+   if(previous_value == 1){
+     Serial.println("transition");
+     register_transition();
+   }
+  } else {
+   value = 0; 
   }
   
-  Serial.print("range: ");
-  Serial.print(maxval-minval);
-  Serial.print(" max: ");
-  Serial.print(maxval);
-  Serial.print(" min: ");
-  Serial.println(minval);
-  
+//  Serial.print("range: ");
+//  Serial.print(maxval-minval);
+//  Serial.print(" max: ");
+//  Serial.print(maxval);
+//  Serial.print(" min: ");
+//  Serial.println(minval);
     
   int running = 0;
-  if(maxval - minval > 200) {
-    running = 1;
-  }
+//  if(maxval - minval > 200) {
+//    running = 1;
+//  }
 
   lcd.setCursor(0, 0);
   if(running == 1) {
@@ -53,20 +74,37 @@ void loop(){
   } else {
     lcd.print("Not Cleaning!");
   }
+  
 
-  Serial.print("Sensor Reading: ");
-  Serial.print(flexSensorReading);
-  Serial.print(" running: ");
-  Serial.println(running);
+//  Serial.print("Sensor value: ");
+//  Serial.print(flexSensorvalue);
+//  Serial.print(" running: ");
+//  Serial.println(running);
 
   loop_lcd();
   loop_temperature();
   previous_running_status = running;
+  previous_value = value;
+  
   is_complete();
   if(is_complete()){
     notify_complete();
   }
-  delay(250); //just here to slow down the output for easier reading
+  delay(frequency_milliseconds); //just here to slow down the output for easier value
+}
+
+void register_transition(){
+}
+boolean is_running(){
+  int required_transition_count;
+  int rolling_average_count = 5;
+  int values[rolling_average_count];
+  for(int i = 0; i < rolling_average_count; ++i)
+    values[i] = 0;
+  int flexSensorvalue = analogRead(flexSensorPin); 
+  //Serial.println(flexSensorvalue);
+  values[++valcounter % keep] = flexSensorvalue;
+  
 }
 
 void loop_temperature(){
@@ -74,7 +112,7 @@ void loop_temperature(){
   int degreesF;
   voltage = getVoltage(temperaturePin);
   degreesC = (voltage - 0.5) * 100.0;
-  degreesF = int(degreesC * (9.0/5.0) + 32.0);
+  degreesF = degreesC * (9.0/5.0) + 32.0;
 
   lcd.setCursor(15, 1);
   lcd.print('F');
