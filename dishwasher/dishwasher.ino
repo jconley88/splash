@@ -2,12 +2,15 @@
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 int flexSensorPin = A0; //analog pin 0
+int temperaturePin = A1; //analog pin 1
 
 const int keep = 20;
+const float wash_time = 2700000;
 const int threshold = 200;
 int values[keep];
 int valcounter = 0;
-const int temperaturePin = 1;
+float cleaning_start_time;
+int previous_running_status = 0;
 
 void setup(){
   setup_lcd();
@@ -44,6 +47,9 @@ void loop(){
   lcd.setCursor(0, 0);
   if(running == 1) {
     lcd.print("Cleaning Now!");
+    if(previous_running_status == 0){
+      reset_timer();
+    }
   } else {
     lcd.print("Not Cleaning!");
   }
@@ -55,18 +61,20 @@ void loop(){
 
   loop_lcd();
   loop_temperature();
+  previous_running_status = running;
   delay(250); //just here to slow down the output for easier reading
 }
 
 void loop_temperature(){
-  float voltage, degreesF, degreesC;
+  float voltage, degreesC;
+  int degreesF;
   voltage = getVoltage(temperaturePin);
   degreesC = (voltage - 0.5) * 100.0;
-  degreesF = degreesC * (9.0/5.0) + 32.0;
+  degreesF = int(degreesC * (9.0/5.0) + 32.0);
 
   lcd.setCursor(15, 1);
-  lcd.print('F')
-  int lcd_position = 15
+  lcd.print('F');
+  int lcd_position = 15;
   while(degreesF)
   {
     lcd.setCursor(lcd_position - 1, 1);
@@ -83,7 +91,7 @@ float getVoltage(int pin)
 
 void loop_lcd() {
   // print the number of seconds since reset:
-  int all_seconds = (2715000 - millis())/(1000);
+  int all_seconds = (wash_time - millis() + cleaning_start_time)/(1000);
   int minutes = all_seconds / 60;
   int seconds = all_seconds % 60;
   
@@ -110,3 +118,8 @@ void print_two_digits(int digits){
   }
   lcd.print(digits);
 }
+
+void reset_timer(){
+  cleaning_start_time = millis();
+}
+
