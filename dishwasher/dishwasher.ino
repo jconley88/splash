@@ -83,7 +83,7 @@ void loop_temperature(){
   Serial.println(degreesF);
   while(degreesF)
   {
-    lcd.setCursor(lcd_position - 1, 1);
+    lcd.setCursor(--lcd_position, 1);
     lcd.print(degreesF % 10);
     degreesF /= 10;
   }
